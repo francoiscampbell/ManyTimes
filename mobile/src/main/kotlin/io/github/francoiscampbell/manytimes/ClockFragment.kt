@@ -1,7 +1,5 @@
 package io.github.francoiscampbell.manytimes
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
@@ -22,10 +20,10 @@ import butterknife.bindViews
  * create an instance of this fragment.
  */
 class ClockFragment : Fragment() {
-    private lateinit var centerViewText: String
-    private var mListener: OnFragmentInteractionListener? = null
+    private var centerViewText: String = DEFAULT_CENTER_VIEW_TEXT
+    private var centerViewTextSizeSp = DEFAULT_CENTER_VIEW_TEXT_SIZE
 
-    private val centerText by bindView<TextView>(R.id.center)
+    private val centerView by bindView<TextView>(R.id.center)
     private val clockButtons by bindViews<FloatingActionButton>(
             R.id.cl_btn0,
             R.id.cl_btn1,
@@ -40,27 +38,21 @@ class ClockFragment : Fragment() {
     private val deleteButton by bindView<FloatingActionButton>(R.id.cl_btnDelete)
 
     private val onClickDigit = { v: View ->
-        if (centerText.text == centerViewText) {
-            centerText.text = ""
+        if (!centerView.text.isNumeric()) {
+            centerView.text = ""
+            centerViewTextSizeSp = BIG_CENTER_VIEW_TEXT_SIZE
+            centerView.setTextSize(TypedValue.COMPLEX_UNIT_SP, centerViewTextSizeSp)
         }
-        centerText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 48f)
-        centerText.append(clockButtons.indexOf(v).toString())
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context as OnFragmentInteractionListener?
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-        }
+        centerView.append(clockButtons.indexOf(v).toString())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            centerViewText = arguments.getString(ARG_CENTER_VIEW_TEXT)
-        }
+
+        centerViewText = savedInstanceState?.getString(ARG_CENTER_VIEW_TEXT) ?:
+                arguments?.getString(ARG_CENTER_VIEW_TEXT) ?: DEFAULT_CENTER_VIEW_TEXT
+        centerViewTextSizeSp = savedInstanceState?.getFloat(ARG_CENTER_VIEW_TEXT_SIZE) ?:
+                arguments?.getFloat(ARG_CENTER_VIEW_TEXT_SIZE) ?: DEFAULT_CENTER_VIEW_TEXT_SIZE
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -72,50 +64,34 @@ class ClockFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        centerText.text = centerViewText
+        centerView.text = centerViewText
+        centerView.setTextSize(TypedValue.COMPLEX_UNIT_SP, centerViewTextSizeSp)
 
         for (button in clockButtons) {
             button.setOnClickListener(onClickDigit)
         }
 
         deleteButton.setOnClickListener {
-            centerText.text = centerText.text.take(Math.max(centerText.text.length - 1, 0))
+            centerView.text = centerView.text.take(Math.max(centerView.text.length - 1, 0))
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }jasdf
-
-    override fun onPause() {
-        super.onPause()
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
-
     public fun getTime(): Int {
-        return centerText.text.toString().toInt()
+        return centerView.text.toString().toInt()
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putString(ARG_CENTER_VIEW_TEXT, centerView.text.toString())
+        outState?.putFloat(ARG_CENTER_VIEW_TEXT_SIZE, centerViewTextSizeSp)
     }
 
     companion object {
-        private val ARG_CENTER_VIEW_TEXT = "ARG_CENTER_VIEW_TEXT"
+        const val ARG_CENTER_VIEW_TEXT = "ARG_CENTER_VIEW_TEXT"
+        const val ARG_CENTER_VIEW_TEXT_SIZE = "ARG_CENTER_VIEW_TEXT_SIZE"
+
+        private const val DEFAULT_CENTER_VIEW_TEXT = ""
+        private const val DEFAULT_CENTER_VIEW_TEXT_SIZE = 24f
+        private const val BIG_CENTER_VIEW_TEXT_SIZE = 48f
 
         /**
          * Use this factory method to create a new instance of
@@ -124,10 +100,12 @@ class ClockFragment : Fragment() {
          * @param centerViewText Parameter 1.
          * @return A new instance of fragment ClockFragment.
          */
-        fun newInstance(centerViewText: String = ""): ClockFragment {
+        fun newInstance(centerViewText: String = DEFAULT_CENTER_VIEW_TEXT,
+                        centerViewTextSizeSp: Float = DEFAULT_CENTER_VIEW_TEXT_SIZE): ClockFragment {
             val fragment = ClockFragment()
             val args = Bundle()
             args.putString(ARG_CENTER_VIEW_TEXT, centerViewText)
+            args.putFloat(ARG_CENTER_VIEW_TEXT_SIZE, centerViewTextSizeSp)
             fragment.arguments = args
             return fragment
         }

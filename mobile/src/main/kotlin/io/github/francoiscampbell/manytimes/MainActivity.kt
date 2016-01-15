@@ -1,6 +1,5 @@
 package io.github.francoiscampbell.manytimes
 
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
@@ -11,10 +10,15 @@ import android.view.Menu
 import android.view.MenuItem
 import butterknife.bindView
 
-class MainActivity : AppCompatActivity(), ClockFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(), GetTimeFragment.OnFragmentInteractionListener {
     private val toolbar by bindView<Toolbar>(R.id.toolbar)
     private val fab by bindView<FloatingActionButton>(R.id.fab)
     private val viewPager by bindView<ViewPager>(R.id.frag_placeholder)
+
+    private var oldFragmentIndex = 0
+    private val times = arrayOfNulls<Int>(3)
+    private val pagerAdapter = MainActivityPagerAdapter(supportFragmentManager)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +29,6 @@ class MainActivity : AppCompatActivity(), ClockFragment.OnFragmentInteractionLis
             Snackbar.make(it, "New timer", Snackbar.LENGTH_LONG).show()
         }
 
-        val pagerAdapter = ClockFragmentPagerAdapter(supportFragmentManager)
         viewPager.adapter = pagerAdapter
     }
 
@@ -49,7 +52,10 @@ class MainActivity : AppCompatActivity(), ClockFragment.OnFragmentInteractionLis
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onFragmentInteraction(uri: Uri) {
-        throw UnsupportedOperationException()
+    override fun getTime() {
+        val hours = pagerAdapter.getHours()
+        val minutes = pagerAdapter.getMinutes()
+        val seconds = pagerAdapter.getSeconds()
+        Snackbar.make(fab, "The time set is $hours:$minutes:$seconds", Snackbar.LENGTH_LONG).show()
     }
 }
