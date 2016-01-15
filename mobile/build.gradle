@@ -35,14 +35,14 @@ repositories {
 }
 
 dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-4584'
-
     wearApp project(':wear')
     testCompile 'junit:junit:4.12'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-4584'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
     compile 'com.google.code.gson:gson:2.5'
-    compile 'io.github.francoiscampbell:circlelayout:0.1.1'
+    compile 'io.github.francoiscampbell:circlelayout:0.1.4'
+    compile 'com.android.support:support-v4:23.1.1'
 }
