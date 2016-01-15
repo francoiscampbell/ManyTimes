@@ -77,7 +77,7 @@ class ClockFragment : Fragment() {
     }
 
     public fun getTime(): Int {
-        return centerView.text.toString().toInt()
+        return if (centerView.text.isNumeric()) centerView.text.toString().toInt() else 0
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

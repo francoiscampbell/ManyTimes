@@ -6,7 +6,8 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import butterknife.OnClick
+import android.widget.Button
+import butterknife.bindView
 
 
 /**
@@ -20,6 +21,8 @@ import butterknife.OnClick
 class GetTimeFragment : Fragment() {
 
     private var mListener: OnFragmentInteractionListener? = null
+
+    private val btnGetTime by bindView<Button>(R.id.btnGetTime)
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -36,9 +39,12 @@ class GetTimeFragment : Fragment() {
         return inflater!!.inflate(R.layout.fragment_get_time, container, false)
     }
 
-    @OnClick(R.id.btnGetTime)
-    fun onClickGetTime() {
-        mListener?.getTime()
+    override fun onStart() {
+        super.onStart()
+
+        btnGetTime.setOnClickListener {
+            mListener?.getTime()
+        }
     }
 
     override fun onDetach() {
